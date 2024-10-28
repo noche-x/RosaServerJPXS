@@ -1,4 +1,5 @@
 #include "tcpclient.h"
+#include "console.h"
 
 #include <arpa/inet.h>
 #include <netdb.h>
@@ -39,6 +40,7 @@ ssize_t TCPClient::send(std::string_view data) const {
 }
 
 sol::object TCPClient::receive(size_t size, sol::this_state s) {
+	Console::log("TCPClient::receive\n");
 	if (socketDescriptor == -1) {
 		throw std::runtime_error(errorNotOpen);
 	}
@@ -46,8 +48,19 @@ sol::object TCPClient::receive(size_t size, sol::this_state s) {
 	sol::state_view lua(s);
 
 	constexpr auto maxToRecv = sizeof(receiveBuffer);
+	std::ostringstream stream;
+
+	stream << "maxToRecv: " << maxToRecv << ", size: " << size << '\n';
+	Console::log(stream.str());
+
 	auto bytesRead =
 	    read(socketDescriptor, receiveBuffer, std::min(size, maxToRecv));
+
+	stream.clear();
+	stream << "bytesRead: " << bytesRead << '\n';
+	Console::log(stream.str());
+	stream.clear();
+
 	if (bytesRead == -1) {
 		if (errno == EAGAIN || errno == EWOULDBLOCK) {
 			return sol::make_object(lua, sol::nil);
