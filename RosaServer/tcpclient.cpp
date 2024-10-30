@@ -40,7 +40,7 @@ ssize_t TCPClient::send(std::string_view data) const {
 }
 
 sol::object TCPClient::receive(size_t size, sol::this_state s) {
-	Console::log("TCPClient::receive\n");
+	// Console::log("TCPClient::receive\n");
 	if (socketDescriptor == -1) {
 		throw std::runtime_error(errorNotOpen);
 	}
@@ -51,14 +51,14 @@ sol::object TCPClient::receive(size_t size, sol::this_state s) {
 	std::ostringstream stream;
 
 	stream << "maxToRecv: " << maxToRecv << ", size: " << size << '\n';
-	Console::log(stream.str());
+	// Console::log(stream.str());
 
 	auto bytesRead =
 	    read(socketDescriptor, receiveBuffer, std::min(size, maxToRecv));
 
 	stream.clear();
 	stream << "bytesRead: " << bytesRead << '\n';
-	Console::log(stream.str());
+	// Console::log(stream.str());
 	stream.clear();
 
 	if (bytesRead == -1) {
